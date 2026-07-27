@@ -2,9 +2,7 @@
 
 Terminal-based course management system for an education provider — courses, instructors, student enrolment, and assessments, backed by MySQL.
 
-> ### ⚠️ Hardcoded database password
->
-> [`db_connection.py`](db_connection.py) contains a MySQL password in plain text, and this repository is public. See [Configuration](#configuration) for how to move it to an environment variable.
+> **Credentials come from the environment.** See [Configuration](#configuration).
 
 ## Overview
 
@@ -72,22 +70,18 @@ connection = mysql.connector.connect(
 )
 ```
 
-**The password is committed in plain text.** Recommended fix:
+Set them before running:
 
-```python
-import os
-import mysql.connector
-
-def create_connection():
-    return mysql.connector.connect(
-        host=os.environ.get("EDUSCHEMA_HOST", "localhost"),
-        user=os.environ.get("EDUSCHEMA_USER", "root"),
-        password=os.environ["EDUSCHEMA_PASSWORD"],
-        database=os.environ.get("EDUSCHEMA_DB", "EduSchema"),
-    )
+```bash
+export EDUSCHEMA_HOST=localhost
+export EDUSCHEMA_USER=root
+export EDUSCHEMA_PASSWORD=your_password
+export EDUSCHEMA_DB=EduSchema
 ```
 
-Then set `EDUSCHEMA_PASSWORD` in your environment. Note that rewriting the file does not remove the value from git history — if that password is used anywhere else, change it there too.
+`create_connection()` raises a clear error if `EDUSCHEMA_PASSWORD` is unset rather than failing obscurely at connect time.
+
+> A password was previously hardcoded here and committed. It has been scrubbed from every commit in git history, including the compiled `__pycache__` bytecode that also contained it. If that password is used anywhere else, change it there.
 
 ## Usage
 
